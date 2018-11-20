@@ -33,24 +33,24 @@ export class ChatComponent implements OnInit {
       }
     });
 
-    const connectionPromise = diffusion.connect({
+    const connectionResult = diffusion.connect({
       host: 'localhost',
       port: 8080,
       principal: 'control',
       credentials: 'password'
     });
 
-    connectionPromise.then((session) => {
+    connectionResult.then((session) => {
       this.chatSession = session;
       this.chatSpecification = new diffusion.topics.TopicSpecification(diffusion.topics.TopicType.TIME_SERIES)
         .withProperty('TIME_SERIES_EVENT_VALUE_TYPE', 'json')
         .withProperty('REMOVAL', 'when subscriptions < 1 for 10m');
 
-      const topicPromise = this.chatSession.topics.add(
+      const topicResult = this.chatSession.topics.add(
         'Demos/Chat/Channel',
         this.chatSpecification
       );
-      topicPromise.then(() => {
+      topicResult.then(() => {
         session.addStream('Demos/Chat/Channel', diffusion.datatypes.json())
           .on('value', (topic, specification, newValue, oldValue) => {
             const msg = new ChatMessage(

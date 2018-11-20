@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 -->
-<ul>
-  <li *ngFor="let chatItem of chatLog">{{chatItem.id}}: {{chatItem.content}}</li>
-</ul>
-<input #textInput (keyup.enter)="sendMessage(textInput.value); textInput.value=''" type="text">
+<div style="height: 500px; width: 400px; overflow: scroll; margin: auto;">
+  <ul>
+    <li *ngFor="let chatItem of chatLog">{{chatItem.id}}: {{chatItem.content}}</li>
+  </ul>
+</div>
+<div style="width: 400px; margin: auto;">
+  <input style="width: 100%;" #textInput (keyup.enter)="sendMessage(textInput.value); textInput.value='';"
+    type="text">
+</div>
