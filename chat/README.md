@@ -1,27 +1,41 @@
-# BasicChat
+# Chat Tutorial - Chapter 1
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.3.
+## Requirements
 
-## Development server
+* **Node.js** - To install Angular and the Diffusion client library.
+* **Diffusion** - You will need to set up a Diffusion server instance.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Building
 
-## Code scaffolding
+Run these commands in a console of your choice.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Install Angular globally.
 
-## Build
+```npm install -g @angular/cli```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Build the project with Angular.
 
-## Running unit tests
+```ng build```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Running
 
-## Running end-to-end tests
+Use the Angular serve instruction  to run the project.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+```ng serve```
 
-## Further help
+Using the default configuration, open [http://localhost:4200](http://localhost:4200) in a browser of your choice.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+## Disclaimer
+
+ Copyright © 2018 Push Technology Ltd.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.

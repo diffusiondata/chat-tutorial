@@ -22,9 +22,12 @@ import * as diffusion from 'diffusion';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-  chatSession: diffusion.Session;
-  chatLog: ChatMessage[] = new Array<ChatMessage>();
-  chatSpecification: diffusion.TopicSpecification;
+  private chatSession: diffusion.Session;
+
+  /**
+   * Lists the chat messages.
+   */
+  public chatLog: ChatMessage[] = new Array<ChatMessage>();
 
   ngOnInit() {
     window.addEventListener('unload', () => {
@@ -33,44 +36,52 @@ export class ChatComponent implements OnInit {
       }
     });
 
-    const connectionResult = diffusion.connect({
+    diffusion.connect({
       host: 'localhost',
       port: 8080,
       principal: 'control',
       credentials: 'password'
-    });
-
-    connectionResult.then((session) => {
+    }).then((session) => {
       this.chatSession = session;
-      this.chatSpecification = new diffusion.topics.TopicSpecification(diffusion.topics.TopicType.TIME_SERIES)
-        .withProperty('TIME_SERIES_EVENT_VALUE_TYPE', 'json')
-        .withProperty('REMOVAL', 'when subscriptions < 1 for 10m');
-
-      const topicResult = this.chatSession.topics.add(
+      this.chatSession.topics.add(
         'Demos/Chat/Channel',
-        this.chatSpecification
-      );
-      topicResult.then(() => {
+        new diffusion.topics.TopicSpecification(diffusion.topics.TopicType.TIME_SERIES)
+          .withProperty('TIME_SERIES_EVENT_VALUE_TYPE', 'json')
+          .withProperty('REMOVAL', 'when subscriptions < 1 for 10m')
+      ).then(() => {
         session.addStream('Demos/Chat/Channel', diffusion.datatypes.json())
-          .on('value', (topic, specification, newValue, oldValue) => {
-            const msg = new ChatMessage(
-              newValue.value.get().generatedId,
+          .on('value', (
+            topic: string,
+            specification: diffusion.TopicSpecification,
+            newValue: diffusion.Event,
+            oldValue: diffusion.Event
+          ) => {
+            this.chatLog.push(new ChatMessage(
+              newValue.value.get().author,
               newValue.timestamp,
               newValue.value.get().content
-            );
-            this.chatLog.push(msg);
+            ));
           });
         this.chatSession.select('Demos/Chat/Channel');
-      }, ((error) => { console.log(error); }));
-    }, ((error) => { console.log(error); }));
+      }, ((error) => { console.error(`Error: Adding the topic failed. More: ${error}`); }));
+    }, ((error) => { console.error(`Error: Connecting to the session failed. More: ${error}`); }));
   }
 
+  /**
+   * Creates a timeseries update with the value that was passed in message.
+   * @param message The value that is to be sent.
+   */
   sendMessage(message: string) {
-    const msg = { content: message, generatedId: this.chatSession.sessionID };
-    this.chatSession.timeseries.append('Demos/Chat/Channel', msg);
+    this.chatSession.timeseries.append('Demos/Chat/Channel', {
+      content: message,
+      author: this.chatSession.sessionID
+    });
   }
 }
 
+/**
+ * The type to be used for listing the time series updates.
+ */
 class ChatMessage {
-  constructor(public id: string, public timestamp: number, public content: string) { }
+  constructor(public readonly author: string, public readonly timestamp: number, public readonly content: string) { }
 }

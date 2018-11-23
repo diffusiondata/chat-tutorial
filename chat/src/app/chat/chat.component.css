@@ -1,0 +1,12 @@
+#chatLogHost
+{
+    height: 500px; width: 400px; overflow: auto; margin: auto;
+}
+
+#textInputHost {
+    width: 400px; margin: auto;
+}
+
+#textInput {
+    width: 100%
+}

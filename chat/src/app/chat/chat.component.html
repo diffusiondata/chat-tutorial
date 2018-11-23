@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 -->
-<div style="height: 500px; width: 400px; overflow: scroll; margin: auto;">
+<div id="chatLogHost">
   <ul>
-    <li *ngFor="let chatItem of chatLog">{{chatItem.id}}: {{chatItem.content}}</li>
+    <li *ngFor="let chatItem of chatLog">{{chatItem.author}}: {{chatItem.content}}</li>
   </ul>
 </div>
-<div style="width: 400px; margin: auto;">
-  <input style="width: 100%;" #textInput (keyup.enter)="sendMessage(textInput.value); textInput.value='';"
+<div id="textInputHost">
+  <input id="textInput" #textInput (keyup.enter)="sendMessage(textInput.value); textInput.value='';"
     type="text">
 </div>
