@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "basic-chat": {
+    "chat": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -16,7 +16,7 @@
             "customWebpackConfig": {
               "path": "webpack.config.js"
             },
-            "outputPath": "dist/basic-chat",
+            "outputPath": "dist/chat",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -60,18 +60,18 @@
         "serve": {
           "builder": "@angular-builders/dev-server:generic",
           "options": {
-            "browserTarget": "basic-chat:build"
+            "browserTarget": "chat:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "basic-chat:build:production"
+              "browserTarget": "chat:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "basic-chat:build"
+            "browserTarget": "chat:build"
           }
         },
         "test": {
@@ -105,7 +105,7 @@
         }
       }
     },
-    "basic-chat-e2e": {
+    "chat-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -114,11 +114,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "basic-chat:serve"
+            "devServerTarget": "chat:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "basic-chat:serve:production"
+              "devServerTarget": "chat:serve:production"
             }
           }
         },
@@ -134,5 +134,5 @@
       }
     }
   },
-  "defaultProject": "basic-chat"
+  "defaultProject": "chat"
 }
