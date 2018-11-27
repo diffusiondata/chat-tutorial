@@ -1,5 +1,7 @@
 # Chat Tutorial - Chapter 1
 
+This is the optimized source from our Chat Tutorial that can be found [https://www.pushtechnology.com/blog/creating-a-chat-application-part-1/](here);
+
 ## Requirements
 
 * **Node.js** - To install Angular and the Diffusion client library.
@@ -9,18 +11,24 @@
 
 Run these commands in a console of your choice.
 
-Install Angular globally.
+Run `npm install` to fetch the packages.
 
-```npm install -g @angular/cli```
+``` BASH
+npm install
+```
 
-Build the project with Angular.
+Build the project with the `npm` script defined in `package.json` .
 
-```ng build```
+``` BASH
+npm run build
+```
 
 ## Running
 
-Use the Angular serve instruction  to run the project.
+Use the `start` script in `package.json` to run the project.
 
-```ng serve```
+``` BASH
+npm run start
+```
 
 Using the default configuration, open [http://localhost:4200](http://localhost:4200) in a browser of your choice.

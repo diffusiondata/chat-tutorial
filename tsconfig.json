@@ -17,6 +17,5 @@
       "es2018",
       "dom"
     ],
-     "noImplicitAny": true,
   }
 }
