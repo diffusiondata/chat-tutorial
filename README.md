@@ -25,7 +25,14 @@ npm run build
 
 ## Running
 
-Use the `start` script in `package.json` to run the project.
+Start Diffusion Server by navigating to the `bin` folder inside your installation and run the script for your operating system. More information can be found in the [Starting the Diffusion server](https://docs.pushtechnology.com/docs/6.2.0/manual/html/administratorguide/server/starting_basic.html) page of the documentation.
+
+``` BASH
+WINDOWS: .\diffusion.bat
+LINUX: ./diffusion.sh
+```
+
+Navigate to where you cloned this project and use the `start` script for npm in `package.json` to run the project.
 
 ``` BASH
 npm run start
