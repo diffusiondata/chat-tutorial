@@ -12,14 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- #chatLogHost
-{
-    height: 500px; width: 400px; overflow: auto; margin: auto;
+
+#chatLogHost {
+    height: 500px;
+    width: 400px;
+    overflow: auto;
+    margin: auto;
 }
 
 #textInputHost {
-    width: 400px; margin: auto;
+    width: 400px;
+    margin: auto;
 }
 
 #textInput {

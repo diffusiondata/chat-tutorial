@@ -29,7 +29,7 @@ Start Diffusion Server by navigating to the `bin` folder inside your installatio
 
 ``` BASH
 WINDOWS: .\diffusion.bat
-LINUX: ./diffusion.sh
+LINUX|UNIX: ./diffusion.sh
 ```
 
 Navigate to where you cloned this project and use the `start` script for npm in `package.json` to run the project.

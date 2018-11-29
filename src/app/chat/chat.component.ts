@@ -29,42 +29,48 @@ export class ChatComponent implements OnInit {
    */
   public chatLog: ChatMessage[] = new Array<ChatMessage>();
 
-  ngOnInit() {
+  async ngOnInit() {
     window.addEventListener('unload', () => {
-      if (this.chatSession !== null) {
+      if (this.chatSession) {
         this.chatSession.close();
       }
     });
 
-    diffusion.connect({
-      host: 'localhost',
-      port: 8080,
-      principal: 'control',
-      credentials: 'password'
-    }).then((session) => {
-      this.chatSession = session;
-      this.chatSession.topics.add(
+    try {
+      this.chatSession = await diffusion.connect({
+        host: 'localhost',
+        port: 8080,
+        principal: 'control',
+        credentials: 'password'
+      });
+      await this.chatSession.topics.add(
         'Demos/Chat/Channel',
         new diffusion.topics.TopicSpecification(diffusion.topics.TopicType.TIME_SERIES)
           .withProperty('TIME_SERIES_EVENT_VALUE_TYPE', 'json')
           .withProperty('REMOVAL', 'when subscriptions < 1 for 10m')
-      ).then(() => {
-        session.addStream('Demos/Chat/Channel', diffusion.datatypes.json())
-          .on('value', (
-            topic: string,
-            specification: diffusion.TopicSpecification,
-            newValue: diffusion.Event,
-            oldValue: diffusion.Event
-          ) => {
-            this.chatLog.push(new ChatMessage(
-              newValue.value.get().author,
-              newValue.timestamp,
-              newValue.value.get().content
-            ));
-          });
-        this.chatSession.select('Demos/Chat/Channel');
-      }, ((error) => { console.error(`Error: Adding the topic failed. More: ${error}`); }));
-    }, ((error) => { console.error(`Error: Connecting to the session failed. More: ${error}`); }));
+      );
+
+      this.chatSession.addStream('Demos/Chat/Channel', diffusion.datatypes.json())
+        .on('value', (
+          topic: string,
+          specification: diffusion.TopicSpecification,
+          newValue: diffusion.Event,
+          oldValue: diffusion.Event
+        ) => {
+          this.chatLog.push(new ChatMessage(
+            newValue.value.get().author,
+            newValue.timestamp,
+            newValue.value.get().content
+          ));
+        });
+      this.chatSession.select('Demos/Chat/Channel');
+    } catch (error) {
+      if (error.id && error.message) {
+        console.error(`Error: ID ${error.id} - ${error.message} - More: %o`, error);
+      } else {
+        console.error(error);
+      }
+    }
   }
 
   /**
@@ -72,10 +78,18 @@ export class ChatComponent implements OnInit {
    * @param message The value that is to be sent.
    */
   sendMessage(message: string) {
-    this.chatSession.timeseries.append('Demos/Chat/Channel', {
-      content: message,
-      author: this.chatSession.sessionID
-    });
+    try {
+      this.chatSession.timeseries.append('Demos/Chat/Channel', {
+        content: message,
+        author: this.chatSession.sessionID
+      });
+    } catch (error) {
+      if (error.id && error.message) {
+        console.error(`Error: ID ${error.id} - ${error.message} - More: %o`, error);
+      } else {
+        console.error(error);
+      }
+    }
   }
 }
 
