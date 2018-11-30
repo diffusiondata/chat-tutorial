@@ -48,6 +48,8 @@ export class ChatComponent implements OnInit {
         new diffusion.topics.TopicSpecification(diffusion.topics.TopicType.TIME_SERIES)
           .withProperty('TIME_SERIES_EVENT_VALUE_TYPE', 'json')
           .withProperty('REMOVAL', 'when subscriptions < 1 for 10m')
+          .withProperty('TIME_SERIES_SUBSCRIPTION_RANGE', 'limit 10')
+          .withProperty('TIME_SERIES_RETAINED_RANGE', 'limit 10')
       );
 
       this.chatSession.addStream('Demos/Chat/Channel', diffusion.datatypes.json())

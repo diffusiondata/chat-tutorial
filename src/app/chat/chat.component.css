@@ -18,13 +18,22 @@
     width: 400px;
     overflow: auto;
     margin: auto;
+    border-style: solid;
+    border-color: black;
+    border-radius: 2px;
+    box-shadow: 2px;
 }
 
 #textInputHost {
     width: 400px;
     margin: auto;
+    border-style: solid;
+    border-color: black;
+    border-radius: 2px;
+    box-shadow: 2px;
+    outline: none;
 }
 
 #textInput {
-    width: 100%
+    width: 395px;
 }
