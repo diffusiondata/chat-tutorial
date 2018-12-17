@@ -1,6 +1,8 @@
 # Chat Tutorial - Chapter 1
 
-This is the optimized source from our Chat Tutorial that can be found in [here](https://www.pushtechnology.com/blog/creating-a-chat-application-part-1).
+This is the final source for chapter 1 of our [chat tutorial](https://www.pushtechnology.com/blog/creating-a-chat-application-part-1).
+
+It includes the improvements at the end of the tutorial, and also adds some CSS to make the final result look nicer.
 
 ## Requirements
 
