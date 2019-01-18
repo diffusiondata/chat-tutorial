@@ -15,33 +15,15 @@
 
 package com.pushtechnology.chattutorial.app;
 
-import java.io.Console;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-
 import com.pushtechnology.diffusion.client.Diffusion;
-import com.pushtechnology.diffusion.client.callbacks.ErrorReason;
-import com.pushtechnology.diffusion.client.content.Content;
-import com.pushtechnology.diffusion.client.features.Messaging;
-import com.pushtechnology.diffusion.client.features.TimeSeries;
-import com.pushtechnology.diffusion.client.features.Topics;
-import com.pushtechnology.diffusion.client.features.TimeSeries.Event;
-import com.pushtechnology.diffusion.client.features.Topics.ValueStream;
 import com.pushtechnology.diffusion.client.features.control.topics.MessagingControl;
 import com.pushtechnology.diffusion.client.features.control.topics.TopicControl;
-import com.pushtechnology.diffusion.client.features.control.topics.TopicUpdateControl;
-import com.pushtechnology.diffusion.client.features.control.topics.MessagingControl.MessageHandler;
-import com.pushtechnology.diffusion.client.features.control.topics.MessagingControl.RequestHandler;
 import com.pushtechnology.diffusion.client.session.Session;
-import com.pushtechnology.diffusion.client.session.SessionId;
 import com.pushtechnology.diffusion.client.topics.details.TopicSpecification;
 import com.pushtechnology.diffusion.client.topics.details.TopicType;
-import com.pushtechnology.diffusion.client.types.ReceiveContext;
-import com.pushtechnology.diffusion.conversation.ResponseHandler;
 import com.pushtechnology.diffusion.datatype.json.JSON;
-import com.pushtechnology.diffusion.datatype.primitive.impl.StringDataTypeImpl;
 
-import static com.pushtechnology.diffusion.datatype.DataTypes.STRING_DATATYPE_NAME;
+import static com.pushtechnology.diffusion.datatype.DataTypes.JSON_DATATYPE_NAME;;
 
 public class SignInMessageReciver {
     public void AwaitMessages() {
@@ -53,12 +35,12 @@ public class SignInMessageReciver {
 
             topicControl.addTopic("Demos/Chat/Channel",
                     topicControl.newSpecification(TopicType.TIME_SERIES)
-                            .withProperty(TopicSpecification.TIME_SERIES_EVENT_VALUE_TYPE, STRING_DATATYPE_NAME)
+                            .withProperty(TopicSpecification.TIME_SERIES_EVENT_VALUE_TYPE, JSON_DATATYPE_NAME)
                             .withProperty(TopicSpecification.TIME_SERIES_SUBSCRIPTION_RANGE, "limit 20")
                             .withProperty(TopicSpecification.REMOVAL, "when this session closes"));
 
             final MessagingControl messagingControl = session.feature(MessagingControl.class);
-            messagingControl.addRequestHandler("ClientJoin", JSON.class, JSON.class,  new SignInHandler());
+            messagingControl.addRequestHandler("ClientJoin", JSON.class, JSON.class, new SignInHandler(session));
 
         } catch (Exception e) {
             System.out.println(e);

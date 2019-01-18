@@ -9,6 +9,11 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    // "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
+    "noImplicitThis": true,                /* Raise error on 'this' expressions with an implied 'any' type. */
+    "alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
+    "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
+    "esModuleInterop": true, /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
     "target": "es5",
     "typeRoots": [
       "node_modules/@types"
@@ -16,6 +21,6 @@
     "lib": [
       "es2018",
       "dom"
-    ],
+    ]
   }
 }

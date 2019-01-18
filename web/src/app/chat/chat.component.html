@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 -->
-<div id="chatLogHost">
-  <ul>
-    <li *ngFor="let chatItem of chatLog">{{chatItem.author}}: {{chatItem.content}}</li>
-  </ul>
-</div>
-<div id="textInputHost">
-  <input id="textInput" #textInput placeholder="Type your message here ..." autofocus (keyup.enter)="sendMessage(textInput.value); textInput.value='';"
-    type="text">
-</div>
+<ul>
+  <li *ngFor="let chatItem of chatLog">{{chatItem.id}}: {{chatItem.content}}</li>
+</ul>
+<input  #textInput (keyup.enter)="sendMessage(textInput.value); textInput.value=''" type="text">
