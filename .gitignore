@@ -24,6 +24,7 @@ node_modules/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.editorconfig
 
 # misc
 /.sass-cache
@@ -38,3 +39,16 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Target Paths like Maven.
+**/target/**
+control/target/**
+control/target/classes/com/pushtechnology/chattutorial/app/SignInHandler.class
+control/target/classes/com/pushtechnology/chattutorial/app/SignInHandler$1.class
+control/target/classes/com/pushtechnology/chattutorial/app/SignInMessageReciver.class
+control/target/classes/com/pushtechnology/chattutorial/app/ChatControlClient.class
+control/target/classes/com/pushtechnology/chattutorial/app/SignInHandler$1.class
+control/target/surefire-reports/com.pushtechnology.chattutorial.app.AppTest.txt
+control/target/surefire-reports/TEST-com.pushtechnology.chattutorial.app.AppTest.xml
+control/target/control-1.0-SNAPSHOT.jar
+control/target/original-control-1.0-SNAPSHOT.jar

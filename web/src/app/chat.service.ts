@@ -20,29 +20,37 @@ import * as diffusion from 'diffusion';
   providedIn: 'root'
 })
 export class ChatService {
-  private chatSession: diffusion.Session;
   private chatSessionPromise: Promise<diffusion.Session>;
   public username: string;
-  private password: string;
 
-  public setUsernameAndPassword(username: string, password: string) {
+  public setUsername(username: string) {
     this.username = username;
-    this.password = password;
   }
 
-  public getSession(): Promise<diffusion.Session> {
+  public async getSession(): Promise<diffusion.Session> {
     if (!this.chatSessionPromise) {
-      this.chatSessionPromise = new Promise((resolve, reject) => {
-        diffusion.connect({
-          // The host that serves the angular pages is the same as the host which serves diffusion.
-          host: window.location.host,
-          port: 8080
-        }).then((session) => {
-          this.chatSession = session;
-          resolve(this.chatSession);
-        }, (error) => reject(error));
+      this.chatSessionPromise = new Promise(async (resolve, reject) => {
+        try {
+          // leaving the host out is a short-hand to connect to where the angular project is being served from.
+          const chatSession = await diffusion.connect({ host: window.location.host, port: 8080 });
+          resolve(chatSession);
+        } catch (error) {
+          reject(error);
+        }
       });
     }
     return this.chatSessionPromise;
+  }
+
+  public async signInRequest(username: string, password: string): Promise<Object> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const session = await this.getSession();
+        resolve(session.messages.sendRequest('ClientJoin', { 'username': username, 'password': password },
+          diffusion.datatypes.json(), diffusion.datatypes.json()));
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 }

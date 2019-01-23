@@ -23,7 +23,7 @@ import com.pushtechnology.diffusion.client.topics.details.TopicSpecification;
 import com.pushtechnology.diffusion.client.topics.details.TopicType;
 import com.pushtechnology.diffusion.datatype.json.JSON;
 
-import static com.pushtechnology.diffusion.datatype.DataTypes.JSON_DATATYPE_NAME;;
+import static com.pushtechnology.diffusion.datatype.DataTypes.JSON_DATATYPE_NAME;
 
 public class SignInMessageReciver {
     public void AwaitMessages() {
@@ -31,17 +31,24 @@ public class SignInMessageReciver {
             final Session session = Diffusion.sessions().principal("admin").password("password").noReconnection()
                     .open("ws://localhost:8080");
 
+            // Create the topic.
             final TopicControl topicControl = session.feature(TopicControl.class);
+            topicControl
+                    .addTopic("Demos/Chat/Channel",
+                            topicControl.newSpecification(TopicType.TIME_SERIES)
+                                    .withProperty(TopicSpecification.TIME_SERIES_EVENT_VALUE_TYPE, JSON_DATATYPE_NAME)
+                                    .withProperty(TopicSpecification.TIME_SERIES_SUBSCRIPTION_RANGE, "limit 20")
+                                    .withProperty(TopicSpecification.REMOVAL, "when this session closes"))
+                    .thenAccept(ignored -> System.out.println("Topic created."))
+                    .exceptionally(( err) -> {
+                        System.out.println("Topic creation failed.");
+                        return null;
+                    });
 
-            topicControl.addTopic("Demos/Chat/Channel",
-                    topicControl.newSpecification(TopicType.TIME_SERIES)
-                            .withProperty(TopicSpecification.TIME_SERIES_EVENT_VALUE_TYPE, JSON_DATATYPE_NAME)
-                            .withProperty(TopicSpecification.TIME_SERIES_SUBSCRIPTION_RANGE, "limit 20")
-                            .withProperty(TopicSpecification.REMOVAL, "when this session closes"));
-
+            // Add the Request Handler and listen to messages.
             final MessagingControl messagingControl = session.feature(MessagingControl.class);
-            messagingControl.addRequestHandler("ClientJoin", JSON.class, JSON.class, new SignInHandler(session));
-
+            messagingControl.addRequestHandler("ClientJoin", JSON.class, JSON.class, new SignInHandler(session))
+                    .thenAccept(ignored -> System.out.println("Listening in on requests."));
         } catch (Exception e) {
             System.out.println(e);
             throw e;

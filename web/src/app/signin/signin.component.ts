@@ -14,8 +14,6 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-
-import * as diffusion from 'diffusion';
 import { ChatService } from '../chat.service';
 
 @Component({
@@ -32,15 +30,11 @@ export class SigninComponent implements OnInit {
 
   async signIn(username: any, password: any) {
     try {
-      const session = await this.chatService.getSession();
-      const data = await session.messages.sendRequest('ClientJoin', { 'username': username.value, 'password': password.value },
-        diffusion.datatypes.json(), diffusion.datatypes.json()
-      );
-
+      const data =  await this.chatService.signInRequest(username.value, password.value);
       const response = (<any>data).get();
       if (response.status === 'OK') {
         this.signedIn = true;
-        this.chatService.setUsernameAndPassword(username.value, password.value);
+        this.chatService.setUsername(username.value);
       } else {
         alert(response.message);
       }

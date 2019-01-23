@@ -20,7 +20,6 @@ import com.pushtechnology.diffusion.client.callbacks.ErrorReason;
 import com.pushtechnology.diffusion.client.features.control.clients.ClientControl;
 import com.pushtechnology.diffusion.client.features.control.topics.MessagingControl;
 import com.pushtechnology.diffusion.datatype.json.JSON;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -39,7 +38,7 @@ public class SignInHandler implements MessagingControl.RequestHandler<JSON, JSON
         super();
         this._session = session;
 
-        _users = new Hashtable<String, String>();
+        _users = new Hashtable<String, String>(3);
         _users.putIfAbsent("Omar", "password1");
         _users.putIfAbsent("Push", "password2");
         _users.putIfAbsent("Diffusion", "password3");
@@ -47,6 +46,7 @@ public class SignInHandler implements MessagingControl.RequestHandler<JSON, JSON
 
     @Override
     public void onClose() {
+        System.out.println("Closing Handler.");
     }
 
     @Override
@@ -57,33 +57,41 @@ public class SignInHandler implements MessagingControl.RequestHandler<JSON, JSON
     @Override
     public void onRequest(JSON request, RequestContext context, Responder<JSON> responder) {
         try {
+            // Mapping for the json object request.
             final CBORFactory factory = new CBORFactory();
             final ObjectMapper mapper = new ObjectMapper();
             final TypeReference<Map<String, String>> typeReference = new TypeReference<Map<String, String>>() {
             };
+
+            // Diffusion role that is going to be assigned to sessions who pass
+            // authentication.
             final String chatRole = "CHAT";
 
             final CBORParser parser = factory.createParser(request.asInputStream());
             final Map<String, String> map = mapper.readValue(parser, typeReference);
-
             String username = map.get("username");
             String password = map.get("password");
-            // Additional improvements: Use password hashes instead of sending them in clear text.
-            System.out.println(MessageFormat.format("Username: {0}; Password: {1};", username, password));
 
             if (_users.containsKey(username) && _users.get(username).equals(password)) {
                 try {
                     ClientControl clientControl = _session.feature(ClientControl.class);
                     clientControl.changeRoles(context.getSessionId(), new HashSet<String>(),
-                            new HashSet<String>(Arrays.asList(chatRole)));
-
-                    responder.respond(Diffusion.dataTypes().json().fromJsonString("{ \"status\": \"OK\" }"));
-
+                            new HashSet<String>(Arrays.asList(chatRole))).thenAccept((ignored) -> {
+                                responder
+                                        .respond(Diffusion.dataTypes().json().fromJsonString("{ \"status\": \"OK\" }"));
+                            }).exceptionally((err) -> {
+                                System.out.println("Changing Role failed.");
+                                responder.respond(Diffusion.dataTypes().json()
+                                        .fromJsonString("{ \"status\": \"Fail\", \"message\": \"Server Error 2.\" }"));
+                                return null;
+                            });
                 } catch (Exception e) {
-                    responder.respond(Diffusion.dataTypes().json().fromJsonString("{ \"status\": \"Fail\", \"message\": \"Server Error.\" }"));
+                    responder.respond(Diffusion.dataTypes().json()
+                            .fromJsonString("{ \"status\": \"Fail\", \"message\": \"Server Error 1.\" }"));
                 }
             } else {
-                responder.respond(Diffusion.dataTypes().json().fromJsonString("{ \"status\": \"Fail\", \"message\": \"Authentication Failed.\" }"));
+                responder.respond(Diffusion.dataTypes().json()
+                        .fromJsonString("{ \"status\": \"Fail\", \"message\": \"Authentication Failed.\" }"));
             }
 
         } catch (Exception e) {
