@@ -42,7 +42,7 @@ dependency-reducued-pom.xml
 Thumbs.db
 
 # Target Paths like Maven.
-**/target/**
+target/**
 control/target/**
 control/target/classes/com/pushtechnology/chattutorial/app/SignInHandler.class
 control/target/classes/com/pushtechnology/chattutorial/app/SignInHandler$1.class
