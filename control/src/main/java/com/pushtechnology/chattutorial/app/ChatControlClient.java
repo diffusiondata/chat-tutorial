@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2016 Push Technology Ltd.
+ * Copyright (C) 2019 Push Technology Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,21 @@
 
 package com.pushtechnology.chattutorial.app;
 
+import java.util.logging.Logger;
+
 /**
  * Control Client for Diffusion Chat Demo.
  *
  */
-public class ChatControlClient {
-    public static SignInMessageReciver _signInMessageReciver;
+public final class ChatControlClient {
 
-    public static void main(String[] args) throws Exception {
-        System.out.println("Starting Control Client.");
-        _signInMessageReciver = new SignInMessageReciver();
-        _signInMessageReciver.AwaitMessages();
+    public static void main(String[] args) {
+        try {
+            Logger.getGlobal().info("Starting Control Client.");
+            SignInMessageReceiver signInMessageReciver = new SignInMessageReceiver();
+            signInMessageReciver.listeningForMessages();
+        } catch (Exception e) {
+            Logger.getGlobal().severe("Execution failed, application stopping. Reason:\n" + e);
+        }
     }
 }

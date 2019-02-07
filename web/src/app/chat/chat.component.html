@@ -1,6 +1,6 @@
 <!--
 /**
- * Copyright © 2018 Push Technology Ltd.
+ * Copyright © 2019 Push Technology Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,4 +17,4 @@
 <ul>
   <li *ngFor="let chatItem of chatLog">{{chatItem.id}}: {{chatItem.content}}</li>
 </ul>
-<input  #textInput (keyup.enter)="sendMessage(textInput.value); textInput.value=''" type="text">
+<input  #textInput [disabled]="!chatService.signedIn" (keyup.enter)="sendMessage(textInput.value); textInput.value=''" type="text">

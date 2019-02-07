@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Push Technology Ltd.
+ * Copyright © 2019 Push Technology Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import * as diffusion from 'diffusion';
 import { ChatService } from '../chat.service';
 
 @Component({
@@ -23,31 +22,31 @@ import { ChatService } from '../chat.service';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-
   chatLog = new Array<ChatMessage>();
-  constructor(private chatService: ChatService) { }
-  public signedIn: boolean;
 
-  ngOnInit() {
-    this.chatService.getSession().then((session) => {
-      session.addStream('Demos/Chat/Channel', diffusion.datatypes.json())
-        .on('value', (topic, specification, newValue, oldValue) => {
-          const msg = new ChatMessage(
-            newValue.value.get().generatedId,
-            newValue.timestamp,
-            newValue.value.get().content
-          );
-          this.chatLog.push(msg);
-        });
-      session.select('Demos/Chat/Channel');
-    });
+  constructor(public chatService: ChatService) { }
+
+  async ngOnInit() {
+    try {
+      await this.chatService.subscribeTopicUpdates((topic, specification, newValue, oldValue) => {
+        const msg = new ChatMessage(
+          newValue.value.get().id,
+          newValue.timestamp,
+          newValue.value.get().content
+        );
+        this.chatLog.push(msg);
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  sendMessage(message: string) {
-    this.chatService.getSession().then((session) => {
-      const msg = { content: message, generatedId: this.chatService.username };
-      session.timeseries.append('Demos/Chat/Channel', msg);
-    });
+  async sendMessage(message: string) {
+    try {
+      await this.chatService.sendMessage(message);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 

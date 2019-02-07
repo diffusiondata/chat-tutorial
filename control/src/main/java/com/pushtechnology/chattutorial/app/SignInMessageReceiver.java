@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2016 Push Technology Ltd.
+ * Copyright (C) 2019 Push Technology Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,12 @@ import com.pushtechnology.diffusion.client.session.Session;
 import com.pushtechnology.diffusion.client.topics.details.TopicSpecification;
 import com.pushtechnology.diffusion.client.topics.details.TopicType;
 import com.pushtechnology.diffusion.datatype.json.JSON;
+import java.util.logging.Logger;
 
 import static com.pushtechnology.diffusion.datatype.DataTypes.JSON_DATATYPE_NAME;
 
-public class SignInMessageReciver {
-    public void AwaitMessages() {
+public final class SignInMessageReceiver {
+    public void listeningForMessages() {
         try {
             final Session session = Diffusion.sessions().principal("admin").password("password").noReconnection()
                     .open("ws://localhost:8080");
@@ -39,19 +40,17 @@ public class SignInMessageReciver {
                                     .withProperty(TopicSpecification.TIME_SERIES_EVENT_VALUE_TYPE, JSON_DATATYPE_NAME)
                                     .withProperty(TopicSpecification.TIME_SERIES_SUBSCRIPTION_RANGE, "limit 20")
                                     .withProperty(TopicSpecification.REMOVAL, "when this session closes"))
-                    .thenAccept(ignored -> System.out.println("Topic created."))
-                    .exceptionally(( err) -> {
-                        System.out.println("Topic creation failed.");
+                    .thenAccept(ignored -> Logger.getGlobal().info("Topic created.")).exceptionally((err) -> {
+                        Logger.getGlobal().warning("Topic creation failed.");
                         return null;
                     });
 
             // Add the Request Handler and listen to messages.
             final MessagingControl messagingControl = session.feature(MessagingControl.class);
             messagingControl.addRequestHandler("ClientJoin", JSON.class, JSON.class, new SignInHandler(session))
-                    .thenAccept(ignored -> System.out.println("Listening in on requests."));
+                    .thenAccept(ignored -> Logger.getGlobal().info("Listening in on requests."));
         } catch (Exception e) {
-            System.out.println(e);
-            throw e;
+            Logger.getGlobal().severe("Execution failed, application stopping. Reason:\n" + e);
         }
     }
 }

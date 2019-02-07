@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2016 Push Technology Ltd.
+ * Copyright (C) 2019 Push Technology Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,38 +20,40 @@ import com.pushtechnology.diffusion.client.callbacks.ErrorReason;
 import com.pushtechnology.diffusion.client.features.control.clients.ClientControl;
 import com.pushtechnology.diffusion.client.features.control.topics.MessagingControl;
 import com.pushtechnology.diffusion.datatype.json.JSON;
+
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Map;
+import java.util.logging.Logger;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.fasterxml.jackson.dataformat.cbor.CBORParser;
 import com.pushtechnology.diffusion.client.session.Session;
 
-public class SignInHandler implements MessagingControl.RequestHandler<JSON, JSON> {
-    private Session _session;
-    private final Hashtable<String, String> _users;
+public final class SignInHandler implements MessagingControl.RequestHandler<JSON, JSON> {
+    private final Session session;
+    private final Map<String, String> users;
 
     public SignInHandler(Session session) {
-        super();
-        this._session = session;
-
-        _users = new Hashtable<String, String>(3);
-        _users.putIfAbsent("Omar", "password1");
-        _users.putIfAbsent("Push", "password2");
-        _users.putIfAbsent("Diffusion", "password3");
+        this.session = session;
+        users = new HashMap<String, String>(3);
+        
+        users.putIfAbsent("Push", "password2");
+        users.putIfAbsent("Diffusion", "password3");
     }
 
     @Override
     public void onClose() {
-        System.out.println("Closing Handler.");
+        Logger.getGlobal().info("Closing Handler.");
     }
 
     @Override
     public void onError(ErrorReason errorReason) {
-        System.out.println(errorReason.toString());
+        Logger.getGlobal().severe(errorReason.toString());
     }
 
     @Override
@@ -63,40 +65,33 @@ public class SignInHandler implements MessagingControl.RequestHandler<JSON, JSON
             final TypeReference<Map<String, String>> typeReference = new TypeReference<Map<String, String>>() {
             };
 
-            // Diffusion role that is going to be assigned to sessions who pass
-            // authentication.
-            final String chatRole = "CHAT";
-
             final CBORParser parser = factory.createParser(request.asInputStream());
             final Map<String, String> map = mapper.readValue(parser, typeReference);
             String username = map.get("username");
             String password = map.get("password");
 
-            if (_users.containsKey(username) && _users.get(username).equals(password)) {
-                try {
-                    ClientControl clientControl = _session.feature(ClientControl.class);
-                    clientControl.changeRoles(context.getSessionId(), new HashSet<String>(),
-                            new HashSet<String>(Arrays.asList(chatRole))).thenAccept((ignored) -> {
-                                responder
-                                        .respond(Diffusion.dataTypes().json().fromJsonString("{ \"status\": \"OK\" }"));
-                            }).exceptionally((err) -> {
-                                System.out.println("Changing Role failed.");
-                                responder.respond(Diffusion.dataTypes().json()
-                                        .fromJsonString("{ \"status\": \"Fail\", \"message\": \"Server Error 2.\" }"));
-                                return null;
-                            });
-                } catch (Exception e) {
-                    responder.respond(Diffusion.dataTypes().json()
-                            .fromJsonString("{ \"status\": \"Fail\", \"message\": \"Server Error 1.\" }"));
-                }
+            if (users.containsKey(username) && users.get(username).equals(password)) {
+
+                // with ClientControl we can change the role for the Session.
+                final ClientControl clientControl = session.feature(ClientControl.class);
+
+                // Diffusion role that is going to be assigned to sessions who pass
+                // authentication.
+                clientControl.changeRoles(context.getSessionId(), new HashSet<String>(),
+                        new HashSet<String>(Arrays.asList("CHAT"))).thenAccept((ignored) -> {
+                            responder.respond(Diffusion.dataTypes().json().fromJsonString("{ \"status\": \"OK\" }"));
+                        }).exceptionally((err) -> {
+                            Logger.getGlobal().warning("Changing Role failed:\n" + err.toString());
+                            responder.respond(Diffusion.dataTypes().json().fromJsonString(
+                                    "{ \"status\": \"Fail\", \"message\": \"Server Error while changing roles.\" }"));
+                            return null;
+                        });
             } else {
                 responder.respond(Diffusion.dataTypes().json()
                         .fromJsonString("{ \"status\": \"Fail\", \"message\": \"Authentication Failed.\" }"));
             }
-
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            responder.reject(e.toString());
+        } catch (IOException e) {
+            Logger.getGlobal().severe(e.toString());
         }
     }
 }

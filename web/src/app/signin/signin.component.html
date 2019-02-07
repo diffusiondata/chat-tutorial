@@ -1,6 +1,6 @@
 <!--
 /**
- * Copyright © 2018 Push Technology Ltd.
+ * Copyright © 2019 Push Technology Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 -->
-<input placeholder="Username" #usernameInput [disabled]="signedIn"> <input placeholder="password" #passwordInput [disabled]="signedIn">
-<input type="button" value="Sign In" (click)="signIn(usernameInput,passwordInput);" [disabled]="signedIn">
+<input placeholder="Username" #usernameInput [disabled]="chatService.signedIn">
+<input placeholder="Password" #passwordInput [disabled]="chatService.signedIn">
+<input type="button" value="Sign In" (click)="signIn(usernameInput,passwordInput);" [disabled]="chatService.signedIn">

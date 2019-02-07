@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Push Technology Ltd.
+ * Copyright © 2019 Push Technology Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -22,19 +22,19 @@ import { ChatService } from '../chat.service';
   styleUrls: ['./signin.component.css']
 })
 export class SigninComponent implements OnInit {
-
   public signedIn: boolean;
-  constructor(private chatService: ChatService) { }
-
   ngOnInit() { }
+
+  constructor(public chatService: ChatService) { }
 
   async signIn(username: any, password: any) {
     try {
-      const data =  await this.chatService.signInRequest(username.value, password.value);
+      const data = await this.chatService.signInRequest(username.value, password.value);
       const response = (<any>data).get();
       if (response.status === 'OK') {
-        this.signedIn = true;
-        this.chatService.setUsername(username.value);
+        // this.signedIn = true;
+        this.chatService.signedIn = true;
+        this.chatService.username = username.value;
       } else {
         alert(response.message);
       }

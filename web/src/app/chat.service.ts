@@ -1,5 +1,5 @@
 /**
- * Copyright © 2018 Push Technology Ltd.
+ * Copyright © 2019 Push Technology Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,15 @@ import * as diffusion from 'diffusion';
 export class ChatService {
   private chatSessionPromise: Promise<diffusion.Session>;
   public username: string;
+  public signedIn: boolean;
 
-  public setUsername(username: string) {
-    this.username = username;
-  }
-
-  public async getSession(): Promise<diffusion.Session> {
+  private async getSession(): Promise<diffusion.Session> {
     if (!this.chatSessionPromise) {
-      this.chatSessionPromise = new Promise(async (resolve, reject) => {
+      this.chatSessionPromise = new Promise<diffusion.Session>(async (resolve, reject) => {
         try {
-          // leaving the host out is a short-hand to connect to where the angular project is being served from.
-          const chatSession = await diffusion.connect({ host: window.location.host, port: 8080 });
+          // The host can be left out if it is the same as the web content providers. The same with the port number,
+          // where in this case angular ng serve uses the port 4200 by default.
+          const chatSession = await diffusion.connect({ port: 8080 });
           resolve(chatSession);
         } catch (error) {
           reject(error);
@@ -42,12 +40,38 @@ export class ChatService {
     return this.chatSessionPromise;
   }
 
+  public async subscribeTopicUpdates(callback: (topic: string, specification: any, newValue: any, oldValue: any) => any)
+    : Promise<diffusion.Stream> {
+    return new Promise<diffusion.Stream>(async (resolve, reject) => {
+      try {
+        const session = await this.getSession();
+        const stream = session.addStream('Demos/Chat/Channel', diffusion.datatypes.json()).on('value', callback);
+        session.select('Demos/Chat/Channel');
+        resolve(stream);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
   public async signInRequest(username: string, password: string): Promise<Object> {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<Object>(async (resolve, reject) => {
       try {
         const session = await this.getSession();
         resolve(session.messages.sendRequest('ClientJoin', { 'username': username, 'password': password },
           diffusion.datatypes.json(), diffusion.datatypes.json()));
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  public async sendMessage(message: string): Promise<Object> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const session = await this.getSession();
+        const msg = { content: message, id: this.username };
+        resolve(session.timeseries.append('Demos/Chat/Channel', msg));
       } catch (error) {
         reject(error);
       }
