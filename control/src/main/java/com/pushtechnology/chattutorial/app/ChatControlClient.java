@@ -15,21 +15,24 @@
 
 package com.pushtechnology.chattutorial.app;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Control Client for Diffusion Chat Demo.
  *
  */
 public final class ChatControlClient {
+    public static Logger LOG;
 
     public static void main(String[] args) {
         try {
-            Logger.getGlobal().info("Starting Control Client.");
+            LOG = LoggerFactory.getLogger(ChatControlClient.class);
+            LOG.info("Starting Control Client.");
             SignInMessageReceiver signInMessageReciver = new SignInMessageReceiver();
             signInMessageReciver.listeningForMessages();
         } catch (Exception e) {
-            Logger.getGlobal().severe("Execution failed, application stopping. Reason:\n" + e);
+            LOG.error("Execution failed, application stopping.", e);
         }
     }
 }

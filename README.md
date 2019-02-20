@@ -9,7 +9,7 @@ It includes the improvements at the end of the tutorial, and also adds some CSS 
 * **Node.js** - To install Angular and the Diffusion client library.
 * **Diffusion** - You will need to set up a Diffusion server instance.
 * **Java** - The control client is based on Java.
-* **Maven** - Maven is responsible for the Java depencies that the control client is using.
+* **Maven** - Maven is responsible for the Java depencies of the control client.
 
 ## Building
 

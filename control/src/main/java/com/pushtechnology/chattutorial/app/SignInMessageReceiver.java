@@ -22,35 +22,36 @@ import com.pushtechnology.diffusion.client.session.Session;
 import com.pushtechnology.diffusion.client.topics.details.TopicSpecification;
 import com.pushtechnology.diffusion.client.topics.details.TopicType;
 import com.pushtechnology.diffusion.datatype.json.JSON;
-import java.util.logging.Logger;
+import com.pushtechnology.diffusion.datatype.DataTypes;
 
-import static com.pushtechnology.diffusion.datatype.DataTypes.JSON_DATATYPE_NAME;
-
+/**
+ * Opens the session, creates the topic and adds the request handler for signing
+ * in.
+ *
+ */
 public final class SignInMessageReceiver {
-    public void listeningForMessages() {
-        try {
-            final Session session = Diffusion.sessions().principal("admin").password("password").noReconnection()
-                    .open("ws://localhost:8080");
+        public void listeningForMessages() {
+                final Session session = Diffusion.sessions().principal("admin").password("password").noReconnection()
+                                .open("ws://localhost:8080");
 
-            // Create the topic.
-            final TopicControl topicControl = session.feature(TopicControl.class);
-            topicControl
-                    .addTopic("Demos/Chat/Channel",
-                            topicControl.newSpecification(TopicType.TIME_SERIES)
-                                    .withProperty(TopicSpecification.TIME_SERIES_EVENT_VALUE_TYPE, JSON_DATATYPE_NAME)
-                                    .withProperty(TopicSpecification.TIME_SERIES_SUBSCRIPTION_RANGE, "limit 20")
-                                    .withProperty(TopicSpecification.REMOVAL, "when this session closes"))
-                    .thenAccept(ignored -> Logger.getGlobal().info("Topic created.")).exceptionally((err) -> {
-                        Logger.getGlobal().warning("Topic creation failed.");
-                        return null;
-                    });
+                // Create the topic.
+                final TopicControl topicControl = session.feature(TopicControl.class);
+                topicControl.addTopic("Demos/Chat/Channel", topicControl.newSpecification(TopicType.TIME_SERIES)
+                                .withProperty(TopicSpecification.TIME_SERIES_EVENT_VALUE_TYPE,
+                                                DataTypes.JSON_DATATYPE_NAME)
+                                .withProperty(TopicSpecification.TIME_SERIES_SUBSCRIPTION_RANGE, "limit 20")
+                                .withProperty(TopicSpecification.REMOVAL, "when this session closes"))
+                                .thenAccept(result -> ChatControlClient.LOG.info("Topic creation successful: {}",
+                                                result))
+                                .exceptionally((err) -> {
+                                        ChatControlClient.LOG.error("Topic creation failed.", err);
+                                        return null;
+                                });
 
-            // Add the Request Handler and listen to messages.
-            final MessagingControl messagingControl = session.feature(MessagingControl.class);
-            messagingControl.addRequestHandler("ClientJoin", JSON.class, JSON.class, new SignInHandler(session))
-                    .thenAccept(ignored -> Logger.getGlobal().info("Listening in on requests."));
-        } catch (Exception e) {
-            Logger.getGlobal().severe("Execution failed, application stopping. Reason:\n" + e);
+                // Add the Request Handler and listen to messages.
+                final MessagingControl messagingControl = session.feature(MessagingControl.class);
+                messagingControl.addRequestHandler("Demos/Chat/Messages/ClientJoin", JSON.class, JSON.class,
+                                new SignInHandler(session))
+                                .thenAccept((ignored) -> ChatControlClient.LOG.info("Listening in on requests."));
         }
-    }
 }

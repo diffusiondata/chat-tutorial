@@ -58,7 +58,7 @@ export class ChatService {
     return new Promise<Object>(async (resolve, reject) => {
       try {
         const session = await this.getSession();
-        resolve(session.messages.sendRequest('ClientJoin', { 'username': username, 'password': password },
+        resolve(session.messages.sendRequest('Demos/Chat/Messages/ClientJoin', { 'username': username, 'password': password },
           diffusion.datatypes.json(), diffusion.datatypes.json()));
       } catch (error) {
         reject(error);
