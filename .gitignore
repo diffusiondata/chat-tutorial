@@ -18,8 +18,8 @@ node_modules/
 *.sublime-workspace
 
 # IDE - VSCode
-*.vscode/
-.vscode/*
+
+control/.vscode/**
 .vscode/settings.json
 .vscode/tasks.json
 .vscode/launch.json
@@ -54,5 +54,5 @@ control/target/surefire-reports/com.pushtechnology.chattutorial.app.AppTest.txt
 control/target/surefire-reports/TEST-com.pushtechnology.chattutorial.app.AppTest.xml
 control/target/control-1.0-SNAPSHOT.jar
 control/target/original-control-1.0-SNAPSHOT.jar
-
+control/target/dependency-reducued-pom.xml
 
