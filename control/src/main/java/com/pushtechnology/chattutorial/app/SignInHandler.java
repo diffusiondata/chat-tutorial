@@ -101,7 +101,7 @@ public final class SignInHandler implements MessagingControl.RequestHandler<JSON
                 .thenAccept((ignored) -> {
                     responder.respond(Diffusion.dataTypes().json().fromJsonString("{ \"status\": \"OK\" }"));
                 }).exceptionally((err) -> {
-                    ChatControlClient.LOG.warn("Changing Role failed.", err);
+                    ChatControlClient.LOG.error("Changing Role failed.", err);
                     responder.respond(Diffusion.dataTypes().json().fromJsonString(
                             "{ \"status\": \"Fail\", \"message\": \"Server Error while changing roles.\" }"));
                     return null;

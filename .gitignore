@@ -35,7 +35,8 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-dependency-reducued-pom.xml
+*.dependency-reducued-pom.xml
+
 
 # System Files
 .DS_Store
