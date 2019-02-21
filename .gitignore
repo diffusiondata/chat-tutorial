@@ -18,13 +18,7 @@ node_modules/
 *.sublime-workspace
 
 # IDE - VSCode
-
-control/.vscode/**
-.vscode/settings.json
-.vscode/tasks.json
-.vscode/launch.json
-.vscode/extensions.json
-.editorconfig
+.vscode/**
 
 # misc
 /.sass-cache
@@ -45,14 +39,3 @@ Thumbs.db
 # Target Paths like Maven.
 target/**
 control/target/**
-control/target/classes/com/pushtechnology/chattutorial/app/SignInHandler.class
-control/target/classes/com/pushtechnology/chattutorial/app/SignInHandler$1.class
-control/target/classes/com/pushtechnology/chattutorial/app/SignInMessageReciver.class
-control/target/classes/com/pushtechnology/chattutorial/app/ChatControlClient.class
-control/target/classes/com/pushtechnology/chattutorial/app/SignInHandler$1.class
-control/target/surefire-reports/com.pushtechnology.chattutorial.app.AppTest.txt
-control/target/surefire-reports/TEST-com.pushtechnology.chattutorial.app.AppTest.xml
-control/target/control-1.0-SNAPSHOT.jar
-control/target/original-control-1.0-SNAPSHOT.jar
-control/target/dependency-reducued-pom.xml
-

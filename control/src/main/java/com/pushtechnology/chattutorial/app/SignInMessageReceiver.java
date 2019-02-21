@@ -24,13 +24,18 @@ import com.pushtechnology.diffusion.client.topics.details.TopicType;
 import com.pushtechnology.diffusion.datatype.json.JSON;
 import com.pushtechnology.diffusion.datatype.DataTypes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Opens the session, creates the topic and adds the request handler for signing
  * in.
  *
  */
 public final class SignInMessageReceiver {
-        public void listeningForMessages() {
+        private static Logger logger = LoggerFactory.getLogger(SignInMessageReceiver.class);
+
+        public static void listeningForMessages() {
                 final Session session = Diffusion.sessions().principal("admin").password("password").noReconnection()
                                 .open("ws://localhost:8080");
 
@@ -41,10 +46,9 @@ public final class SignInMessageReceiver {
                                                 DataTypes.JSON_DATATYPE_NAME)
                                 .withProperty(TopicSpecification.TIME_SERIES_SUBSCRIPTION_RANGE, "limit 20")
                                 .withProperty(TopicSpecification.REMOVAL, "when this session closes"))
-                                .thenAccept(result -> ChatControlClient.LOG.info("Topic creation successful: {}",
-                                                result))
+                                .thenAccept(result -> logger.info("Topic creation successful: {}", result))
                                 .exceptionally((err) -> {
-                                        ChatControlClient.LOG.error("Topic creation failed.", err);
+                                        logger.error("Topic creation failed.", err);
                                         return null;
                                 });
 
@@ -52,6 +56,6 @@ public final class SignInMessageReceiver {
                 final MessagingControl messagingControl = session.feature(MessagingControl.class);
                 messagingControl.addRequestHandler("Demos/Chat/Messages/ClientJoin", JSON.class, JSON.class,
                                 new SignInHandler(session))
-                                .thenAccept((ignored) -> ChatControlClient.LOG.info("Listening in on requests."));
+                                .thenAccept((ignored) -> logger.info("Listening in on requests."));
         }
 }

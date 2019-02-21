@@ -32,7 +32,6 @@ export class SigninComponent implements OnInit {
       const data = await this.chatService.signInRequest(username.value, password.value);
       const response = (<any>data).get();
       if (response.status === 'OK') {
-        // this.signedIn = true;
         this.chatService.signedIn = true;
         this.chatService.username = username.value;
       } else {

@@ -22,63 +22,73 @@ import com.pushtechnology.diffusion.client.features.control.topics.MessagingCont
 import com.pushtechnology.diffusion.client.session.Session;
 import com.pushtechnology.diffusion.datatype.json.JSON;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.fasterxml.jackson.dataformat.cbor.CBORParser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 /**
- * Implementation of RequestHandler for authenticating clients and granting topic update privlieges.
+ * Implementation of RequestHandler for authenticating clients and granting
+ * topic update privileges.
  *
  */
 public final class SignInHandler implements MessagingControl.RequestHandler<JSON, JSON> {
+    private static Logger logger = LoggerFactory.getLogger(SignInHandler.class);
     private final Session session;
-
-    private final Map<String, String> users;
+    
+    /**
+     * A map containing the authentication information.
+     */
+    private final Map<String, String> userAuthenticationMap;
 
     /**
      * Constructor accepting a diffusion session used to change roles.
      */
     public SignInHandler(Session session) {
         this.session = session;
-        users = new HashMap<String, String>(3);
-
-        users.put("Push", "password2");
-        users.put("Diffusion", "password3");
+        userAuthenticationMap = new HashMap<String, String>(3);
+        userAuthenticationMap.put("Push", "password2");
+        userAuthenticationMap.put("Diffusion", "password3");
     }
 
     @Override
     public void onClose() {
-        ChatControlClient.LOG.info("Closing Handler.");
+        logger.info("Closing Handler.");
     }
 
     @Override
     public void onError(ErrorReason errorReason) {
-        ChatControlClient.LOG.error(errorReason.toString());
+        logger.error(errorReason.toString());
     }
 
     @Override
     public void onRequest(JSON request, RequestContext context, Responder<JSON> responder) {
+        final Map<String, String> signinginUserMap;
+        final String username;
+        final String password;
 
-        final Map<String, String> map;
         try {
-            map = mapJson(request.asInputStream());
+            signinginUserMap = mapJson(request.asInputStream());
         } catch (Exception e) {
-            ChatControlClient.LOG.error("Parsing json to Map failed.", e);
+            logger.error("Parsing json to Map failed.", e);
             responder.respond(Diffusion.dataTypes().json()
                     .fromJsonString("{ \"status\": \"Fail\", \"message\": \"Authentication Failed.\" }"));
             return;
         }
 
-        String username = map.get("username");
-        String password = map.get("password");
+        username = signinginUserMap.get("username");
+        password = signinginUserMap.get("password");
 
         if (username == null || password == null) {
             responder.respond(Diffusion.dataTypes().json()
@@ -86,7 +96,8 @@ public final class SignInHandler implements MessagingControl.RequestHandler<JSON
             return;
         }
 
-        if (!users.containsKey(username) || !users.get(username).equals(password)) {
+        if (!userAuthenticationMap.containsKey(username)
+                || !userAuthenticationMap.get(username).equals(password)) {
             responder.respond(Diffusion.dataTypes().json()
                     .fromJsonString("{ \"status\": \"Fail\", \"message\": \"Authentication Failed.\" }"));
         }
@@ -101,20 +112,18 @@ public final class SignInHandler implements MessagingControl.RequestHandler<JSON
                 .thenAccept((ignored) -> {
                     responder.respond(Diffusion.dataTypes().json().fromJsonString("{ \"status\": \"OK\" }"));
                 }).exceptionally((err) -> {
-                    ChatControlClient.LOG.error("Changing Role failed.", err);
+                    logger.error("Changing Role failed.", err);
                     responder.respond(Diffusion.dataTypes().json().fromJsonString(
                             "{ \"status\": \"Fail\", \"message\": \"Server Error while changing roles.\" }"));
                     return null;
                 });
-
     }
 
     /**
      * Mapping for the json object request.
      * 
      */
-    private Map<String, String> mapJson(InputStream stream) throws IOException {
-
+    private static Map<String, String> mapJson(InputStream stream) throws IOException {
         final CBORFactory factory = new CBORFactory();
         final ObjectMapper mapper = new ObjectMapper();
         final TypeReference<Map<String, String>> typeReference = new TypeReference<Map<String, String>>() {
