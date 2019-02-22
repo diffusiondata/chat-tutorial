@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class SignInMessageReceiver {
-        private static Logger logger = LoggerFactory.getLogger(SignInMessageReceiver.class);
+        private static final Logger LOG = LoggerFactory.getLogger(SignInMessageReceiver.class);
 
         public static void listeningForMessages() {
                 final Session session = Diffusion.sessions().principal("admin").password("password").noReconnection()
@@ -46,9 +46,9 @@ public final class SignInMessageReceiver {
                                                 DataTypes.JSON_DATATYPE_NAME)
                                 .withProperty(TopicSpecification.TIME_SERIES_SUBSCRIPTION_RANGE, "limit 20")
                                 .withProperty(TopicSpecification.REMOVAL, "when this session closes"))
-                                .thenAccept(result -> logger.info("Topic creation successful: {}", result))
+                                .thenAccept(result -> LOG.info("Topic creation successful: {}", result))
                                 .exceptionally((err) -> {
-                                        logger.error("Topic creation failed.", err);
+                                        LOG.error("Topic creation failed.", err);
                                         return null;
                                 });
 
@@ -56,6 +56,6 @@ public final class SignInMessageReceiver {
                 final MessagingControl messagingControl = session.feature(MessagingControl.class);
                 messagingControl.addRequestHandler("Demos/Chat/Messages/ClientJoin", JSON.class, JSON.class,
                                 new SignInHandler(session))
-                                .thenAccept((ignored) -> logger.info("Listening in on requests."));
+                                .thenAccept((ignored) -> LOG.info("Listening in on requests."));
         }
 }

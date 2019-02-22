@@ -23,14 +23,14 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class ChatControlClient {
-    private static Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(ChatControlClient.class);
+
     public static void main(String[] args) {
         try {
-            logger = LoggerFactory.getLogger(ChatControlClient.class);
-            logger.info("Starting Control Client.");
+            LOG.info("Starting Control Client.");
             SignInMessageReceiver.listeningForMessages();
         } catch (Exception e) {
-            logger.error("Execution failed, application stopping.", e);
+            LOG.error("Execution failed, application stopping.", e);
         }
     }
 }

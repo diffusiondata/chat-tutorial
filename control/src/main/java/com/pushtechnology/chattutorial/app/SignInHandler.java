@@ -44,7 +44,7 @@ import java.util.Map;
  *
  */
 public final class SignInHandler implements MessagingControl.RequestHandler<JSON, JSON> {
-    private static Logger logger = LoggerFactory.getLogger(SignInHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SignInHandler.class);
     private final Session session;
     
     /**
@@ -64,12 +64,12 @@ public final class SignInHandler implements MessagingControl.RequestHandler<JSON
 
     @Override
     public void onClose() {
-        logger.info("Closing Handler.");
+        LOG.info("Closing Handler.");
     }
 
     @Override
     public void onError(ErrorReason errorReason) {
-        logger.error(errorReason.toString());
+        LOG.error(errorReason.toString());
     }
 
     @Override
@@ -81,7 +81,7 @@ public final class SignInHandler implements MessagingControl.RequestHandler<JSON
         try {
             signinginUserMap = mapJson(request.asInputStream());
         } catch (Exception e) {
-            logger.error("Parsing json to Map failed.", e);
+            LOG.error("Parsing json to Map failed.", e);
             responder.respond(Diffusion.dataTypes().json()
                     .fromJsonString("{ \"status\": \"Fail\", \"message\": \"Authentication Failed.\" }"));
             return;
@@ -112,7 +112,7 @@ public final class SignInHandler implements MessagingControl.RequestHandler<JSON
                 .thenAccept((ignored) -> {
                     responder.respond(Diffusion.dataTypes().json().fromJsonString("{ \"status\": \"OK\" }"));
                 }).exceptionally((err) -> {
-                    logger.error("Changing Role failed.", err);
+                    LOG.error("Changing Role failed.", err);
                     responder.respond(Diffusion.dataTypes().json().fromJsonString(
                             "{ \"status\": \"Fail\", \"message\": \"Server Error while changing roles.\" }"));
                     return null;
